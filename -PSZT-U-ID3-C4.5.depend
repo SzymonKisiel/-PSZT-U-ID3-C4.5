@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1611603267 source:c:\users\szymon\documents\codeblocks projects\-pszt-u-id3-c4.5\main.cpp
+	<iostream>
+	<fstream>
+	<string>
+
