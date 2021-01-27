@@ -5,7 +5,7 @@
 #include <array>
 #include <unordered_map>
 #include <cmath>
-#include <time.h>
+#include <ctime>
 
 using namespace std;
 
@@ -368,7 +368,7 @@ int main()
 
     cout << "\tk-krotna walidacja krzyzowa\n\n";
     vector<Sample> dataSubsets[K];
-    float avgError;
+    float avgError = 0;
     for (int i = 0; i < K; ++i) {
         copy(data.begin() + i*data.size()/K, data.begin() + (i+1)*data.size()/K, back_inserter(dataSubsets[i]));
     }
