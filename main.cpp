@@ -5,75 +5,12 @@
 #include <array>
 #include <unordered_map>
 #include <cmath>
-#include <utility>
+#include <time.h>
 
 using namespace std;
 
 const int ATTRIBUTES_AMOUNT = 6;
-//bool flags[] = {false, false, false, false, false, false}
-
-
-class Node {
-    int attribute = -1;
-    vector<string> attributes;
-    vector<Node*> decisions;
-public:
-    void set(int attribute, vector<string> & attr) {
-        this->attribute = attribute;
-        for (int i = 0; i < attr.size(); ++i) {
-            Node* newNode = new Node;
-            attributes.push_back(attr[i]);
-            this->decisions.push_back(newNode);
-        }
-    }
-    void deleteNodes() {
-        for (int i = 0; i < decisions.size(); ++i) {
-            decisions[i]->deleteNodes();
-            delete decisions[i];
-        }
-    }
-    /*Node & getNext(string value) {
-        for (int i = 0; i < decision.size(); ++i) {
-            if (decision[i].first == value) {
-                return decision[i].second;
-            }
-        }
-    }*/
-    Node* getNext(int index) {
-        return decisions[index];
-    }
-    void print(int level = 0) {
-        for (int i = 0; i < level; ++i) {
-            cout << "  ";
-        }
-        if (attribute == -1) {
-            cout << "X" << endl;
-        }
-        else {
-            cout << attribute << endl;
-            for (int i = 0; i < decisions.size(); ++i) {
-                decisions[i]->print(level + 1);
-            }
-        }
-    }
-};
-
-class Tree {
-    Node* root;
-public:
-    Tree() {
-        root = new Node();
-    }
-    ~Tree() {
-        root->deleteNodes();
-    }
-    Node* getRoot() {
-        return root;
-    }
-    void print() {
-        root->print();
-    }
-};
+const int K = 5;
 
 class Sample {
     vector<string> attributes;
@@ -105,6 +42,87 @@ public:
     }
 };
 
+class Node {
+    int attribute = -1;
+    string sClass;
+    vector<string> attributes;
+    vector<Node*> decisions;
+public:
+    void set(int attribute, vector<string> & attr) {
+        this->attribute = attribute;
+        for (int i = 0; i < attr.size(); ++i) {
+            Node* newNode = new Node;
+            attributes.push_back(attr[i]);
+            this->decisions.push_back(newNode);
+        }
+    }
+    void setTerminalNode(string sClass) {
+        this->attribute = -1;
+        this->sClass = sClass;
+    }
+    void deleteNodes() {
+        for (int i = 0; i < decisions.size(); ++i) {
+            decisions[i]->deleteNodes();
+            delete decisions[i];
+        }
+    }
+    Node* getNext(int index) {
+        return decisions[index];
+    }
+    void print(int level = 0) {
+        for (int i = 0; i < level; ++i) {
+            cout << "  ";
+        }
+        if (attribute == -1) {
+            cout << sClass << endl;
+        }
+        else {
+            cout << attribute << endl;
+            for (int i = 0; i < decisions.size(); ++i) {
+                decisions[i]->print(level + 1);
+            }
+        }
+    }
+    string classify(Sample & sample) {
+        if (attribute == -1) {
+            return sClass;
+        }
+        else {
+            string attr = sample.getAttribute(attribute);
+            for (int i = 0; i < attributes.size(); ++i) {
+                if (attributes[i] == attr) {
+                    sample.deleteAttribute(attribute);
+                    return decisions[i]->classify(sample);
+                }
+            }
+        }
+        return "zle";
+    }
+};
+
+class Tree {
+    Node* root;
+public:
+    Tree() {
+        root = new Node();
+    }
+    ~Tree() {
+        root->deleteNodes();
+        delete root;
+    }
+    Node* getRoot() {
+        return root;
+    }
+    void print() {
+        root->print();
+    }
+    string classify(Sample & sample) {
+        return root->classify(sample);
+    }
+};
+
+
+
 void printData(vector<Sample>& data) {
     for (int i = 0; i < data.size(); ++i) {
         data[i].print();
@@ -119,16 +137,36 @@ public:
     ID3(vector<Sample> & data) {
         node = tree.getRoot();
         this->data = data;
-
-        something(data, this->node);
+        train(data, node);
     }
     void print() {
         tree.print();
     }
+    string classify(Sample s) {
+        return tree.classify(s);
+    }
 private:
-    void something(vector<Sample> data, Node* node, int attributesAmount = ATTRIBUTES_AMOUNT) {
-        if (attributesAmount == 0)
+    void train(vector<Sample> data, Node* node, int attributesAmount = ATTRIBUTES_AMOUNT) {
+        // warunek koncowy - jesli nie ma wiecej atrybutow to utworz wezel terminalny z najczestsza klasa
+        if (attributesAmount == 0) {
+            std::unordered_map<std::string, size_t> classesCount;
+            for (auto it = data.begin(); it != data.end(); ++it) {
+                classesCount[it->getClass()]++;
+            }
+
+            std::string maxClass;
+            int maximum = 0;
+            for (auto sClass : classesCount) {
+                if (sClass.second > maximum) {
+                    maximum = sClass.second;
+                    maxClass = sClass.first;
+                }
+            }
+            node->setTerminalNode(maxClass);
             return;
+        }
+
+        // warunek koncowy - jesli wszystkie klasy w podzbiorze takie same, to utworz wezel terminalny z ta klasa
         bool flag = true;
         auto claz = data[0].getClass();
         for (int i = 0; i < data.size() && flag; ++i) {
@@ -136,12 +174,11 @@ private:
                 flag = false;
         }
         if (flag) {
-            cout << "FAJNIE" << endl;
+            node->setTerminalNode(claz);
             return;
         }
 
-        if (attributesAmount == 4)
-            ;//printData(data);
+
         std::unordered_map<std::string, size_t> classesCount;
         std::string maxClazz;
 
@@ -162,14 +199,12 @@ private:
                 maxClazz = clazz.first;
             }
         }
-        //cout << entropy << endl;
 
         int maxAttribute = -1;
         float maxGain = 0.0f;
         for (int i = 0; i < attributesAmount; ++i) {
             float gain = entropy;
             std::unordered_map<std::string, std::unordered_map<std::string, size_t>> attributeCount = attributesCount[i];
-            //cout << attributeCount[0].first << endl;
             int classesAmount = 0;
 
             for (auto attr : attributeCount) {
@@ -177,7 +212,6 @@ private:
                 int classesAmount = 0;
                 for (auto sClass : attr.second) {
                     classesAmount += sClass.second;
-                    //cout << attr.first << '\t' << sClass.first << '\t' << sClass.second << endl;
                 }
 
                 // obliczenie entropii wybranego atrybutu
@@ -192,28 +226,21 @@ private:
                 maxAttribute = i;
                 maxGain = gain;
             }
-           // cout << "Zdobycz informacji dla atrybutu " << i << ": " << gain << endl;
         }
-        //cout << "Najwieksza zdobycz informacji dla atrybutu " << maxAttribute << ": " << maxGain << endl;
-
         vector<string> dec;
         for (auto attr : attributesCount[maxAttribute]) {
             dec.push_back(attr.first);
         }
         node->set(maxAttribute, dec);
 
-        /*for (int i = 0; i < attributesCount[maxAttribute].size(); ++i) {
-            something(costam(data, i), node->getNext(i), attributesAmount-1);
-        }*/
         int i = 0;
         for (auto attr : attributesCount[maxAttribute]) {
-            something(costam(data, maxAttribute, attr.first), node->getNext(i), attributesAmount-1);
+            train(divideDataByAttribute(data, maxAttribute, attr.first), node->getNext(i), attributesAmount-1);
             ++i;
         }
 
     }
-
-    vector<Sample> costam(vector<Sample> & data ,int attrId, string attr) {
+    vector<Sample> divideDataByAttribute(vector<Sample> & data ,int attrId, string attr) {
         vector<Sample> result;
         for (int i = 0; i < data.size(); ++i) {
             Sample temp = data[i];
@@ -221,16 +248,24 @@ private:
                 temp.deleteAttribute(attrId);
                 result.push_back(temp);
             }
-
         }
-        //printData(result);
-        //cout << "------------------" << endl << endl;;
         return result;
     }
 };
 
+void shuffleData(vector<Sample> & data) {
+    vector<Sample> result;
+    while (!data.empty()) {
+        int i = rand() % data.size();
+        result.push_back(data[i]);
+        data.erase(data.begin() + i , data.begin() + i +1);
+    }
+    data = result;
+}
+
 int main()
 {
+    srand(time(NULL));
     ifstream file;
     file.open("car.data");
     if (!file.good()) {
@@ -255,32 +290,70 @@ int main()
         sample.setClass(sClass);
         data.push_back(sample);
     }
-    //getBestAttribute(data);
-    //printData(data);
-    ID3 id3(data);
-    id3.print();
+    shuffleData(data);
 
-
-    //for (int i = 0; i < ATTRIBUTES_AMOUNT; ++i) {
-    //    for (auto attr : attributesCount[maxAttribute]) {
-    //        cout << attr.first << endl;
-    //    }
-    //}
-    //attributesCount[maxAttribute];
-
-    /*
-    vector<string> dec;
-    for (auto attr : attributesCount[maxAttribute]) {
-        dec.push_back(attr.first);
+    cout << "\tk-krotna walidacja krzyzowa\n\n";
+    vector<Sample> dataSubsets[K];
+    float avgError;
+    for (int i = 0; i < K; ++i) {
+        copy(data.begin() + i*data.size()/K, data.begin() + (i+1)*data.size()/K, back_inserter(dataSubsets[i]));
     }
-    node->set(maxAttribute, dec);
-    */
-    //for (int i = 0; i < ; ++i) {
+    for (int j = 0; j < K; ++j) {
+        vector<Sample> trainingSet;
+        vector<Sample> testingSet;
+        for (int i = 0; i < K; ++i) {
+            if (j != i)
+                trainingSet.insert(trainingSet.end(), dataSubsets[i].begin(), dataSubsets[i].end());
+            else
+                testingSet = dataSubsets[i];
+        }
 
-    //}
+        //testingSet = data;
+        ID3 id3(trainingSet);
 
-    //node = node->getNext(0);
-    //node->set(maxAttribute, dec);
-    //tree.print();
+        int correctCount = 0;
+        int incorrectCount = 0;
+        for (int i = 0; i < testingSet.size(); ++i) {
+            string result = id3.classify(testingSet[i]);
+            if (result == testingSet[i].getClass()) {
+                ++correctCount;
+            }
+            else {
+                ++incorrectCount;
+            }
+        }
+        cout << "\t" << j+1 << "/" << K << " jako zbior testowy" << endl;
+        cout << "Rozmiar zbioru testowego:\t" << testingSet.size() << endl;
+        cout << "Poprawnie zaklasyfikowane:\t" << correctCount << "\t"
+             << (float)correctCount / testingSet.size() * 100 << "%" << endl;
+        cout << "Niepoprawnie zaklasyfikowane:\t" << incorrectCount << "\t"
+             << (float)incorrectCount / testingSet.size() * 100 << "%" << endl;
+        cout << endl;
+
+        avgError += (float)incorrectCount / testingSet.size() * 100;
+    }
+    avgError /= K;
+    cout << "Sredni blad: " << avgError << "%" << endl << endl;
+
+    cout << "\tCaly zbior jako zbior uczacy i testowy\n\n";
+    ID3 id3(data);
+    //id3.print();
+
+    int correctCount = 0;
+    int incorrectCount = 0;
+    for (int i = 0; i < data.size(); ++i) {
+        string result = id3.classify(data[i]);
+        if (result == data[i].getClass()) {
+            ++correctCount;
+        }
+        else {
+            ++incorrectCount;
+        }
+    }
+    cout << "Rozmiar zbioru testowego:\t" << data.size() << endl;
+    cout << "Poprawnie zaklasyfikowane:\t" << correctCount << "\t"
+         << (float)correctCount / data.size() * 100 << "%" << endl;
+    cout << "Niepoprawnie zaklasyfikowane:\t" << incorrectCount << "\t"
+         << (float)incorrectCount / data.size() * 100 << "%" << endl;
     return 0;
 }

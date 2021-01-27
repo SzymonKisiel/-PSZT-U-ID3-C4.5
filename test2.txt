@@ -1,0 +1,153 @@
+TEST 1
+        k-krotna walidacja krzyzowa
+
+        1/5 jako zbior testowy
+Rozmiar zbioru testowego:       345
+Poprawnie zaklasyfikowane:      311     90.1449%
+Niepoprawnie zaklasyfikowane:   34      9.85507%
+
+        2/5 jako zbior testowy
+Rozmiar zbioru testowego:       346
+Poprawnie zaklasyfikowane:      304     87.8613%
+Niepoprawnie zaklasyfikowane:   42      12.1387%
+
+        3/5 jako zbior testowy
+Rozmiar zbioru testowego:       345
+Poprawnie zaklasyfikowane:      312     90.4348%
+Niepoprawnie zaklasyfikowane:   33      9.56522%
+
+        4/5 jako zbior testowy
+Rozmiar zbioru testowego:       346
+Poprawnie zaklasyfikowane:      306     88.4393%
+Niepoprawnie zaklasyfikowane:   40      11.5607%
+
+        5/5 jako zbior testowy
+Rozmiar zbioru testowego:       346
+Poprawnie zaklasyfikowane:      309     89.3064%
+Niepoprawnie zaklasyfikowane:   37      10.6936%
+
+Sredni blad: 10.7627%
+
+        Caly zbior jako zbior uczacy i testowy
+
+Rozmiar zbioru testowego:       1728
+Poprawnie zaklasyfikowane:      1728    100%
+Niepoprawnie zaklasyfikowane:   0       0%
+
+
+
+
+TEST 2
+        k-krotna walidacja krzyzowa
+
+        1/5 jako zbior testowy
+Rozmiar zbioru testowego:       345
+Poprawnie zaklasyfikowane:      304     88.1159%
+Niepoprawnie zaklasyfikowane:   41      11.8841%
+
+        2/5 jako zbior testowy
+Rozmiar zbioru testowego:       346
+Poprawnie zaklasyfikowane:      304     87.8613%
+Niepoprawnie zaklasyfikowane:   42      12.1387%
+
+        3/5 jako zbior testowy
+Rozmiar zbioru testowego:       345
+Poprawnie zaklasyfikowane:      309     89.5652%
+Niepoprawnie zaklasyfikowane:   36      10.4348%
+
+        4/5 jako zbior testowy
+Rozmiar zbioru testowego:       346
+Poprawnie zaklasyfikowane:      319     92.1965%
+Niepoprawnie zaklasyfikowane:   27      7.80347%
+
+        5/5 jako zbior testowy
+Rozmiar zbioru testowego:       346
+Poprawnie zaklasyfikowane:      317     91.6185%
+Niepoprawnie zaklasyfikowane:   29      8.3815%
+
+Sredni blad: 10.1285%
+
+        Caly zbior jako zbior uczacy i testowy
+
+Rozmiar zbioru testowego:       1728
+Poprawnie zaklasyfikowane:      1728    100%
+Niepoprawnie zaklasyfikowane:   0       0%
+
+
+
+TEST 3
+        k-krotna walidacja krzyzowa
+
+        1/5 jako zbior testowy
+Rozmiar zbioru testowego:       345
+Poprawnie zaklasyfikowane:      309     89.5652%
+Niepoprawnie zaklasyfikowane:   36      10.4348%
+
+        2/5 jako zbior testowy
+Rozmiar zbioru testowego:       346
+Poprawnie zaklasyfikowane:      303     87.5723%
+Niepoprawnie zaklasyfikowane:   43      12.4277%
+
+        3/5 jako zbior testowy
+Rozmiar zbioru testowego:       345
+Poprawnie zaklasyfikowane:      305     88.4058%
+Niepoprawnie zaklasyfikowane:   40      11.5942%
+
+        4/5 jako zbior testowy
+Rozmiar zbioru testowego:       346
+Poprawnie zaklasyfikowane:      301     86.9942%
+Niepoprawnie zaklasyfikowane:   45      13.0058%
+
+        5/5 jako zbior testowy
+Rozmiar zbioru testowego:       346
+Poprawnie zaklasyfikowane:      311     89.8844%
+Niepoprawnie zaklasyfikowane:   35      10.1156%
+
+Sredni blad: 11.5156%
+
+        Caly zbior jako zbior uczacy i testowy
+
+Rozmiar zbioru testowego:       1728
+Poprawnie zaklasyfikowane:      1728    100%
+Niepoprawnie zaklasyfikowane:   0       0%
+
+
+
+TEST 4
+        k-krotna walidacja krzyzowa
+
+        1/5 jako zbior testowy
+Rozmiar zbioru testowego:       345
+Poprawnie zaklasyfikowane:      310     89.8551%
+Niepoprawnie zaklasyfikowane:   35      10.1449%
+
+        2/5 jako zbior testowy
+Rozmiar zbioru testowego:       346
+Poprawnie zaklasyfikowane:      322     93.0636%
+Niepoprawnie zaklasyfikowane:   24      6.93642%
+
+        3/5 jako zbior testowy
+Rozmiar zbioru testowego:       345
+Poprawnie zaklasyfikowane:      302     87.5362%
+Niepoprawnie zaklasyfikowane:   43      12.4638%
+
+        4/5 jako zbior testowy
+Rozmiar zbioru testowego:       346
+Poprawnie zaklasyfikowane:      308     89.0173%
+Niepoprawnie zaklasyfikowane:   38      10.9827%
+
+        5/5 jako zbior testowy
+Rozmiar zbioru testowego:       346
+Poprawnie zaklasyfikowane:      305     88.1503%
+Niepoprawnie zaklasyfikowane:   41      11.8497%
+
+Sredni blad: 10.4755%
+
+        Caly zbior jako zbior uczacy i testowy
+
+Rozmiar zbioru testowego:       1728
+Poprawnie zaklasyfikowane:      1728    100%
+Niepoprawnie zaklasyfikowane:   0       0%
+
+
+TEST 5
