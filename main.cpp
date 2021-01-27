@@ -42,6 +42,38 @@ public:
     }
 };
 
+string getMaxClass(vector<Sample> & data) {
+    std::unordered_map<std::string, size_t> classesCount;
+    for (auto it = data.begin(); it != data.end(); ++it) {
+        classesCount[it->getClass()]++;
+    }
+
+    std::string maxClass;
+    int maximum = 0;
+    for (auto sClass : classesCount) {
+        if (sClass.second > maximum) {
+            maximum = sClass.second;
+            maxClass = sClass.first;
+        }
+    }
+    return maxClass;
+}
+
+
+vector<Sample> divideDataByAttribute(vector<Sample> & data ,int attrId, string attr) {
+    vector<Sample> result;
+    for (int i = 0; i < data.size(); ++i) {
+        Sample temp = data[i];
+        if (data[i].getAttribute(attrId) == attr) {
+            temp.deleteAttribute(attrId);
+            result.push_back(temp);
+        }
+    }
+    return result;
+}
+void printData(vector<Sample> & data);
+
+
 class Node {
     int attribute = -1;
     string sClass;
@@ -60,11 +92,16 @@ public:
         this->attribute = -1;
         this->sClass = sClass;
     }
+    int getDecisionsSize() {
+        return decisions.size();
+    }
     void deleteNodes() {
         for (int i = 0; i < decisions.size(); ++i) {
             decisions[i]->deleteNodes();
             delete decisions[i];
         }
+        attributes.clear();
+        decisions.clear();
     }
     Node* getNext(int index) {
         return decisions[index];
@@ -96,7 +133,37 @@ public:
                 }
             }
         }
-        return "zle";
+        return "";
+    }
+    void c45(vector<Sample> data) {
+        if (attribute == -1) {
+            return;
+        }
+        else {
+            for (int i = 0; i < attributes.size(); ++i) {
+               decisions[i]->c45(divideDataByAttribute(data, attribute, attributes[i]));
+            }
+            //oblicz b³¹d e1
+            int incorrectCount1 = 0;
+            for (int i = 0; i < data.size(); ++i) {
+                if (classify(data[i]) != data[i].getClass())
+                    ++incorrectCount1;
+            }
+
+            //oblicz b³¹d e2
+            int incorrectCount2 = 0;
+            string maxClass = getMaxClass(data);
+            for (int i = 0; i < data.size(); ++i) {
+                if (maxClass != data[i].getClass())
+                    ++incorrectCount2;
+            }
+            //jeœli e1 >= e2 to zastap cale poddrzewo jednym wezlem terminalnym:
+            if (incorrectCount1 >= incorrectCount2) {
+                deleteNodes();
+                setTerminalNode(getMaxClass(data));
+            }
+            return;
+        }
     }
 };
 
@@ -119,15 +186,10 @@ public:
     string classify(Sample & sample) {
         return root->classify(sample);
     }
-};
-
-
-
-void printData(vector<Sample>& data) {
-    for (int i = 0; i < data.size(); ++i) {
-        data[i].print();
+    void c45(vector<Sample> data) {
+        root->c45(data);
     }
-}
+};
 
 class ID3 {
     Tree tree;
@@ -145,43 +207,41 @@ public:
     string classify(Sample s) {
         return tree.classify(s);
     }
+    void c45(vector<Sample> data) {
+        tree.c45(data);
+    }
 private:
+    /*void test(Node* node) {
+        if (node->getClass() != "") {
+            cout << "HEJO" << endl;
+            return;
+        }
+        for (int i = 0; i < node->getDecisionsSize(); ++i) {
+            test(node->getNext(i));
+        }
+        return;
+    }*/
     void train(vector<Sample> data, Node* node, int attributesAmount = ATTRIBUTES_AMOUNT) {
         // warunek koncowy - jesli nie ma wiecej atrybutow to utworz wezel terminalny z najczestsza klasa
         if (attributesAmount == 0) {
-            std::unordered_map<std::string, size_t> classesCount;
-            for (auto it = data.begin(); it != data.end(); ++it) {
-                classesCount[it->getClass()]++;
-            }
-
-            std::string maxClass;
-            int maximum = 0;
-            for (auto sClass : classesCount) {
-                if (sClass.second > maximum) {
-                    maximum = sClass.second;
-                    maxClass = sClass.first;
-                }
-            }
-            node->setTerminalNode(maxClass);
+            node->setTerminalNode(getMaxClass(data));
             return;
         }
 
         // warunek koncowy - jesli wszystkie klasy w podzbiorze takie same, to utworz wezel terminalny z ta klasa
         bool flag = true;
-        auto claz = data[0].getClass();
+        auto class2 = data[0].getClass();
         for (int i = 0; i < data.size() && flag; ++i) {
-            if (claz != data[i].getClass())
+            if (class2 != data[i].getClass())
                 flag = false;
         }
         if (flag) {
-            node->setTerminalNode(claz);
+            node->setTerminalNode(class2);
             return;
         }
 
 
         std::unordered_map<std::string, size_t> classesCount;
-        std::string maxClazz;
-
         std::array<std::unordered_map<std::string, std::unordered_map<std::string, size_t>>, ATTRIBUTES_AMOUNT> attributesCount;
         for (auto it = data.begin(); it != data.end(); ++it) {
             for (size_t i = 0; i < attributesAmount; ++i) {
@@ -194,10 +254,6 @@ private:
         for (auto clazz : classesCount) {
             float p = clazz.second / (float)data.size();;
             entropy -= p * log(p) / log(2.0f);
-
-            if (!maxClazz.empty() && clazz.second > classesCount[maxClazz]) {
-                maxClazz = clazz.first;
-            }
         }
 
         int maxAttribute = -1;
@@ -253,6 +309,12 @@ private:
     }
 };
 
+void printData(vector<Sample>& data) {
+    for (int i = 0; i < data.size(); ++i) {
+        data[i].print();
+    }
+}
+
 void shuffleData(vector<Sample> & data) {
     vector<Sample> result;
     while (!data.empty()) {
@@ -292,6 +354,18 @@ int main()
     }
     shuffleData(data);
 
+
+    bool useC45 = false;
+    char input;
+    cout << "Czy uzyc algorytmu C4.5? (y/n)" << endl;
+    cin >> input;
+    if (input == 'Y' || input == 'y')
+        useC45 = true;
+    if (useC45)
+        cout << " - - - C4.5 - - -" << endl << endl;
+    else
+        cout << " - - - ID3 - - -" << endl << endl;
+
     cout << "\tk-krotna walidacja krzyzowa\n\n";
     vector<Sample> dataSubsets[K];
     float avgError;
@@ -308,8 +382,9 @@ int main()
                 testingSet = dataSubsets[i];
         }
 
-        //testingSet = data;
         ID3 id3(trainingSet);
+        if (useC45)
+            id3.c45(testingSet);
 
         int correctCount = 0;
         int incorrectCount = 0;
@@ -337,7 +412,8 @@ int main()
 
     cout << "\tCaly zbior jako zbior uczacy i testowy\n\n";
     ID3 id3(data);
-    //id3.print();
+    if (useC45)
+        id3.c45(data);
 
     int correctCount = 0;
     int incorrectCount = 0;

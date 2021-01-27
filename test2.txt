@@ -151,3 +151,37 @@ Niepoprawnie zaklasyfikowane:   0       0%
 
 
 TEST 5
+        k-krotna walidacja krzyzowa
+
+        1/5 jako zbior testowy
+Rozmiar zbioru testowego:       345
+Poprawnie zaklasyfikowane:      311     90.1449%
+Niepoprawnie zaklasyfikowane:   34      9.85507%
+
+        2/5 jako zbior testowy
+Rozmiar zbioru testowego:       346
+Poprawnie zaklasyfikowane:      301     86.9942%
+Niepoprawnie zaklasyfikowane:   45      13.0058%
+
+        3/5 jako zbior testowy
+Rozmiar zbioru testowego:       345
+Poprawnie zaklasyfikowane:      304     88.1159%
+Niepoprawnie zaklasyfikowane:   41      11.8841%
+
+        4/5 jako zbior testowy
+Rozmiar zbioru testowego:       346
+Poprawnie zaklasyfikowane:      310     89.5954%
+Niepoprawnie zaklasyfikowane:   36      10.4046%
+
+        5/5 jako zbior testowy
+Rozmiar zbioru testowego:       346
+Poprawnie zaklasyfikowane:      308     89.0173%
+Niepoprawnie zaklasyfikowane:   38      10.9827%
+
+Sredni blad: 11.2264%
+
+        Caly zbior jako zbior uczacy i testowy
+
+Rozmiar zbioru testowego:       1728
+Poprawnie zaklasyfikowane:      1728    100%
+Niepoprawnie zaklasyfikowane:   0       0%
