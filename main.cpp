@@ -143,14 +143,14 @@ public:
             for (int i = 0; i < attributes.size(); ++i) {
                decisions[i]->c45(divideDataByAttribute(data, attribute, attributes[i]));
             }
-            //oblicz b³¹d e1
+            //oblicz blad e1
             int incorrectCount1 = 0;
             for (int i = 0; i < data.size(); ++i) {
                 if (classify(data[i]) != data[i].getClass())
                     ++incorrectCount1;
             }
 
-            //oblicz b³¹d e2
+            //oblicz blad e2
             int incorrectCount2 = 0;
             string maxClass = getMaxClass(data);
             for (int i = 0; i < data.size(); ++i) {
@@ -211,16 +211,6 @@ public:
         tree.c45(data);
     }
 private:
-    /*void test(Node* node) {
-        if (node->getClass() != "") {
-            cout << "HEJO" << endl;
-            return;
-        }
-        for (int i = 0; i < node->getDecisionsSize(); ++i) {
-            test(node->getNext(i));
-        }
-        return;
-    }*/
     void train(vector<Sample> data, Node* node, int attributesAmount = ATTRIBUTES_AMOUNT) {
         // warunek koncowy - jesli nie ma wiecej atrybutow to utworz wezel terminalny z najczestsza klasa
         if (attributesAmount == 0) {
